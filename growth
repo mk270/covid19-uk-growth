@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+from sqlite3 import dbapi2 as sqlite
+import datetime
+
+DB = "cached.db"
+SQL = """SELECT day, cases FROM cases_log ORDER BY day;"""
+
+def get_raw_cases():
+    db = sqlite.connect(DB)
+    c = db.cursor()
+    results = c.execute(SQL)
+    for day, cases in results.fetchall():
+        d = datetime.datetime.strptime(day, '%Y-%m-%d')
+        yield d, cases
+
+def get_daily_changes():
+    previous = None
+    for day, cases in get_raw_cases():
+        if previous is not None:
+            prev_day, prev_cases = previous
+            change_day = day - prev_day
+            change_cases = cases - prev_cases
+
+            assert change_day.days == 1 # we got the right day
+
+            yield day, cases, change_cases
+        previous = day, cases
+
+def run():
+    previous = None
+    for day, cases, d_cases in get_daily_changes():
+        if previous is not None:
+            prev_day, prev_cases, prev_d_cases = previous
+            growth_factor = d_cases * 1.0 / prev_d_cases
+
+            print(day, cases, d_cases, growth_factor)
+        previous = day, cases, d_cases
+
+if __name__ == '__main__':
+   run()
