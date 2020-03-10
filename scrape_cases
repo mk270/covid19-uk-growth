@@ -5,6 +5,7 @@ import lxml.html
 import re
 import datetime
 from sqlite3 import dbapi2 as sqlite
+import sys
 
 DB = 'cached.db'
 SQL = """INSERT INTO cases_log (day, cases) VALUES (?, ?);"""
@@ -32,10 +33,12 @@ def get_date_and_count():
 
 def save_update(day_formatted, count):
     db = sqlite.connect(DB)
-    c = db.cursor()
-    c.execute(SQL, (day_formatted, count))
-    db.commit()
-    db.close()
+    try:
+        with db:
+            db.execute(SQL, (day_formatted, count))
+    except sqlite3.IntegrityError:
+        print("Couldn't update DB, probably because today's data not yet available")
+        sys.exit(1)
 
 def run():
     day, count = get_date_and_count()
