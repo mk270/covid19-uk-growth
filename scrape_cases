@@ -30,14 +30,17 @@ def get_date_and_count():
     day = datetime.datetime.strptime(date, '%d %B %Y')
     return day, int(count)
 
-def run():
-    day, count = get_date_and_count()
-    day_formatted = datetime.datetime.strftime(day, '%Y-%m-%d')
+def save_update(day_formatted, count):
     db = sqlite.connect(DB)
     c = db.cursor()
     c.execute(SQL, (day_formatted, count))
     db.commit()
     db.close()
+
+def run():
+    day, count = get_date_and_count()
+    day_formatted = datetime.datetime.strftime(day, '%Y-%m-%d')
+    save_update(day_formatted, count)
 
 if __name__ == '__main__':
    run()
