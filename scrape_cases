@@ -5,6 +5,7 @@ import lxml.html
 import re
 import datetime
 from sqlite3 import dbapi2 as sqlite
+import sqlite3
 import sys
 
 DB = 'cached.db'
