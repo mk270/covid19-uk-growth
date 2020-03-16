@@ -3,7 +3,7 @@ DB := cached.db
 SEED := seed.csv
 
 all:
-	echo not clear what this should do yet
+	@echo not clear what this should do yet
 
 initdb: $(SEED)
 	rm -f -- $(DB)
