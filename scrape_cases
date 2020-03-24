@@ -45,7 +45,19 @@ def save_update(day_formatted, count):
         print("Or because it has already been obtained")
         sys.exit(1)
 
+def already_done_today():
+    db = sqlite.connect(DB)
+    sql = """SELECT day from cases_log WHERE day = ?;"""
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    with db:
+        results = db.execute(sql, (today,))
+        rowcount = len(results.fetchall())
+        return rowcount > 0
+
 def run():
+    if already_done_today():
+        print("Data already obtained for today")
+        sys.exit(0)
     day, count = get_date_and_count()
     day_formatted = datetime.datetime.strftime(day, '%Y-%m-%d')
     save_update(day_formatted, count)
