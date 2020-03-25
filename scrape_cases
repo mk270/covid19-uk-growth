@@ -41,8 +41,7 @@ def save_update(day_formatted, count):
             db.execute(SQL, (day_formatted, count))
     except sqlite3.IntegrityError:
         print("Couldn't update DB")
-        print("This could be probably because today's data not yet available")
-        print("Or because it has already been obtained")
+        print("This is probably because today's data not yet available")
         sys.exit(1)
 
 def already_done_today():
