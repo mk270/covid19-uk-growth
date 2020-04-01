@@ -22,7 +22,7 @@ def today_iso():
 def get_date_and_count():
     req = requests.get(URL)
     root = lxml.html.fromstring(req.text)
-    headings = root.xpath("//h2[@id = '%s']" % 'number-of-cases')
+    headings = root.xpath("//h2[@id = '%s']" % 'number-of-cases-and-deaths')
     matching_h2 = headings[0]
     siblings = [ elt for elt in matching_h2.itersiblings() ]
     tgt = siblings[0]
