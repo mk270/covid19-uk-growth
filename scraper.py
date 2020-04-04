@@ -18,8 +18,7 @@ def get_report():
 
     return tgt.text
 
-def get_date_and_count():
-    text = get_report()
+def extract_results(text):
     regexp = re.compile(pattern)
     results = regexp.match(text)
     # print(text, results)
@@ -28,3 +27,8 @@ def get_date_and_count():
     day = datetime.datetime.strptime(date, '%d %B %Y')
     count = count.replace(",", "")
     return day, int(count)
+
+def get_date_and_count():
+    text = get_report()
+    day, count = extract_results(text)
+    return day, count
