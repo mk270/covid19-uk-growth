@@ -6,7 +6,11 @@ import logging
 
 URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 
-pattern = r'^As of 9am on (.*2020),.* ([0-9,]+) were confirmed( as)? positi'
+pattern = r'^As of 9am on (.*2020),' + \
+          r' ([0-9,]+) people have been tested' + \
+          r'.* ([0-9,]+) were confirmed( as)? positi'
+
+max_matches = 3 + 1 # number of groups in regexp above, plus one for whole
 
 def get_report():
     req = requests.get(URL)
@@ -24,13 +28,16 @@ def extract_results(text):
     results = regexp.match(text)
     logging.info(text)
     logging.info(results)
-    whole, date, count = tuple([ results.group(i) for i in range(0, 3) ])
+
+    whole, date, tested, count = tuple([ results.group(i)
+                                         for i in range(0, max_matches) ])
 
     day = datetime.datetime.strptime(date, '%d %B %Y')
     count = count.replace(",", "")
-    return day, int(count)
+    tested = tested.replace(",", "")
+    return day, int(count), int(tested)
 
 def get_date_and_count():
     text = get_report()
-    day, count = extract_results(text)
+    day, count, tested = extract_results(text)
     return day, count
