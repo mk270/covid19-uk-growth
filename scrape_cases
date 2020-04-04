@@ -19,11 +19,11 @@ def run():
     if database.already_done_today(today_iso()):
         print("Data already obtained for today")
         sys.exit(0)
-    day, count = scraper.get_date_and_count()
+    day, count, tested = scraper.get_date_and_count()
     # date_diff = (datetime.datetime.now() - day).days
 
     day_formatted = datetime.datetime.strftime(day, iso_date_fmt)
-    database.save_update(day_formatted, count)
+    database.save_update(day_formatted, count, tested)
 
 if __name__ == '__main__':
    run()

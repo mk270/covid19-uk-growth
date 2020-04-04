@@ -4,13 +4,13 @@ import sys
 import datetime
 
 DB = 'cached.db'
-SQL = """INSERT INTO cases_log (day, cases) VALUES (?, ?);"""
+SQL = """INSERT INTO cases_log (day, cases, tested) VALUES (?, ?, ?);"""
 
-def save_update(day_formatted, count):
+def save_update(day_formatted, count, tested):
     db = sqlite.connect(DB)
     try:
         with db:
-            db.execute(SQL, (day_formatted, count))
+            db.execute(SQL, (day_formatted, count, tested))
     except sqlite3.IntegrityError:
         print("Couldn't update DB")
         print("This is probably because today's data not yet available")

@@ -40,4 +40,4 @@ def extract_results(text):
 def get_date_and_count():
     text = get_report()
     day, count, tested = extract_results(text)
-    return day, count
+    return day, count, tested
