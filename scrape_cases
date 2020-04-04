@@ -17,7 +17,7 @@ def run():
         logging.getLogger().setLevel(20)
 
     if database.already_done_today(today_iso()):
-        print("Data already obtained for today")
+        logging.warn("Data already obtained for today")
         sys.exit(0)
     day, count, tested = scraper.get_date_and_count()
     # date_diff = (datetime.datetime.now() - day).days
