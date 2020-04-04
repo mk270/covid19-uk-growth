@@ -2,6 +2,7 @@ import requests
 import lxml.html
 import re
 import datetime
+import logging
 
 URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 
@@ -21,7 +22,8 @@ def get_report():
 def extract_results(text):
     regexp = re.compile(pattern)
     results = regexp.match(text)
-    # print(text, results)
+    logging.info(text)
+    logging.info(results)
     whole, date, count = tuple([ results.group(i) for i in range(0, 3) ])
 
     day = datetime.datetime.strptime(date, '%d %B %Y')

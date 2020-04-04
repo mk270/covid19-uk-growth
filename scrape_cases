@@ -4,6 +4,8 @@ import datetime
 import database
 import sys
 import scraper
+import logging
+import os
 
 iso_date_fmt = "%Y-%m-%d"
 
@@ -11,6 +13,9 @@ def today_iso():
     return datetime.datetime.now().strftime(iso_date_fmt)
 
 def run():
+    if "DEBUG" in os.environ:
+        logging.getLogger().setLevel(20)
+
     if database.already_done_today(today_iso()):
         print("Data already obtained for today")
         sys.exit(0)
