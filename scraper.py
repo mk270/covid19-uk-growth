@@ -7,7 +7,7 @@ URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 
 pattern = r'^As of 9am on (.*2020),.* ([0-9,]+) were confirmed( as)? positi'
 
-def get_date_and_count():
+def get_report():
     req = requests.get(URL)
     root = lxml.html.fromstring(req.text)
     headings = root.xpath("//h2[@id = '%s']" % 'number-of-cases-and-deaths')
@@ -16,8 +16,10 @@ def get_date_and_count():
     tgt = siblings[0]
     # probably could have done that all with xpath
 
-    text = tgt.text
+    return tgt.text
 
+def get_date_and_count():
+    text = get_report()
     regexp = re.compile(pattern)
     results = regexp.match(text)
     # print(text, results)
