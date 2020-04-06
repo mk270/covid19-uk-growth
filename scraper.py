@@ -1,14 +1,17 @@
 import requests
 import lxml.html
 import re
+import time
 import datetime
 import logging
 
 URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 
-pattern = r'^As of 9am on (.*2020),' + \
-          r' ([0-9,]+) people have been tested' + \
-          r'.* ([0-9,]+) were confirmed( as)? positi'
+patterns = {
+    "date": r'^As of 9am ([0-9]+) ([A-Z][a-z]+),',
+    "tested": r'([0-9,]+) people have been tested',
+    "positive": r'.* ([0-9,]+) tested positive'
+}
 
 max_matches = 3 + 1 # number of groups in regexp above, plus one for whole
 
@@ -18,26 +21,38 @@ def get_report():
     headings = root.xpath("//h2[@id = '%s']" % 'number-of-cases-and-deaths')
     matching_h2 = headings[0]
     siblings = [ elt for elt in matching_h2.itersiblings() ]
-    tgt = siblings[0]
-    # probably could have done that all with xpath
+    return siblings
 
-    return tgt.text
+def extract_results(elts):
+    def extract():
+        for name, pattern in patterns.items():
+            regexp = re.compile(pattern)
+            results = None
+            for elt in elts:
+                text = elt.text
+                if text is None:
+                    continue
+                results = regexp.match(text)
+                if results is None:
+                    continue
+                break
+            yield name, results
 
-def extract_results(text):
-    regexp = re.compile(pattern)
-    results = regexp.match(text)
-    logging.info(text)
-    logging.info(results)
+    groups = dict([ (name, results) for name, results in extract() ])
 
-    whole, date, tested, count = tuple([ results.group(i)
-                                         for i in range(0, max_matches) ])
+    day = int(groups["date"].group(1))
+    month_name = groups["date"].group(2)
 
-    day = datetime.datetime.strptime(date, '%d %B %Y')
-    count = count.replace(",", "")
-    tested = tested.replace(",", "")
-    return day, int(count), int(tested)
+    month = time.strptime(month_name, '%B').tm_mon
+    year = datetime.datetime.now().year
+    date = datetime.datetime(year, month, day)
+
+    tested = int(groups["tested"].groups(1)[0].replace(",", ""))
+    count = int(groups["positive"].groups(1)[0].replace(",", ""))
+
+    return date, count, tested
 
 def get_date_and_count():
-    text = get_report()
-    day, count, tested = extract_results(text)
+    elts = get_report()
+    day, count, tested = extract_results(elts)
     return day, count, tested
