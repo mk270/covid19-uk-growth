@@ -8,7 +8,7 @@ import logging
 URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 
 patterns = {
-    "date": r'^As of 9am on ([0-9]+) ([A-Z][a-z]+),',
+    "date": r'^As of 9am( on)? ([0-9]+) ([A-Z][a-z]+),',
     "tested": r'([0-9,]+) people have been tested',
     "positive": r'.* ([0-9,]+) tested positive'
 }
@@ -30,18 +30,21 @@ def extract_results(elts):
             results = None
             for elt in elts:
                 text = elt.text
+                logging.info(text)
                 if text is None:
                     continue
                 results = regexp.match(text)
                 if results is None:
                     continue
                 break
+            logging.info(name)
+            logging.info(results)
             yield name, results
 
     groups = dict([ (name, results) for name, results in extract() ])
 
-    day = int(groups["date"].group(1))
-    month_name = groups["date"].group(2)
+    day = int(groups["date"].group(2))
+    month_name = groups["date"].group(3)
 
     month = time.strptime(month_name, '%B').tm_mon
     year = datetime.datetime.now().year
