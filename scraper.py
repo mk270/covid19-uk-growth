@@ -10,7 +10,7 @@ URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 patterns = {
     "date": r'^As of 9am( on)? ([0-9]+) ([A-Z][a-z]+),',
     "tested": r'([0-9,]+) people have been tested',
-    "positive": r'.* ([0-9,]+) tested positive'
+    "positive": r'.* ([0-9,]+) (have )?tested positive'
 }
 
 max_matches = 3 + 1 # number of groups in regexp above, plus one for whole
