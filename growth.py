@@ -88,12 +88,14 @@ class AvgAugmenter(DateAugmenter):
     def __next__(self):
         c = next(self.source)
         self.current = c
-        current_date = self.date()
-        aug = self.augmentation()
-        i = tuple(list(c) + [aug])
+
         self.prev = c
         if c[-1] is not None:
             self.lru.append(c[-1])
+
+        aug = self.augmentation()
+        i = tuple(list(c) + [aug])
+
         return i
 
     def augmentation(self):
