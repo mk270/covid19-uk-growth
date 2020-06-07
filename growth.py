@@ -4,6 +4,7 @@ from sqlite3 import dbapi2 as sqlite
 import datetime
 import unittest
 import collections
+from math import nan
 
 DB = "cached.db"
 SQL = """SELECT day, cases FROM cases_log ORDER BY day;"""
@@ -122,12 +123,22 @@ def get_raw_cases():
         yield d, cases
 
 def run():
-    # calculate_rx()
     cases = CasesAugmenter(get_raw_cases())
     rx = RxAugmenter(cases)
     avg = AvgAugmenter(rx, 7)
+
     for datetime, cases, daily_increase, growth, avg_growth in avg:
-        print(datetime, cases, daily_increase, growth, avg_growth)
+        daily_increase_s = nan if daily_increase is None else daily_increase
+        growth_s = nan if growth is None else growth
+        avg_growth_s = nan if avg_growth is None else avg_growth
+
+        print (
+            f"{datetime:%Y-%m-%d} "
+            f"{cases:>10} "
+            f"{daily_increase_s:>6} "
+            f"{growth_s:>10f} "
+            f"{avg_growth_s:>10f}"
+        )
 
 
 if __name__ == '__main__':
