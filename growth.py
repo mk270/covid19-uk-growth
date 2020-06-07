@@ -126,7 +126,8 @@ def run():
     cases = CasesAugmenter(get_raw_cases())
     rx = RxAugmenter(cases)
     avg = AvgAugmenter(rx, 7)
-    for i in avg: print(i)
+    for datetime, cases, daily_increase, growth, avg_growth in avg:
+        print(datetime, cases, daily_increase, growth, avg_growth)
 
 
 if __name__ == '__main__':
