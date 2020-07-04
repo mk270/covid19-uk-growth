@@ -10,7 +10,7 @@ URL = 'https://gov.uk/guidance/coronavirus-covid-19-information-for-the-public'
 patterns = {
     "date": r'^As of 9 ?am( on)? ([0-9]+) ([A-Z][a-z]+),',
     "tested": r'.*there have been ([0-9,]+) tests',
-    "positive": r'^([0-9,]+) (people )?(have )?tested positive.*'
+    "positive": r'.* ([0-9,]+) (people )?(have )?tested positive.*'
 }
 
 max_matches = 3 + 1 # number of groups in regexp above, plus one for whole
@@ -18,7 +18,7 @@ max_matches = 3 + 1 # number of groups in regexp above, plus one for whole
 def get_report():
     req = requests.get(URL)
     root = lxml.html.fromstring(req.text)
-    headings = root.xpath("//h2[@id = '%s']" % 'number-of-cases-and-deaths')
+    headings = root.xpath("//h3[@id = '%s']" % 'positive-cases')
     matching_h2 = headings[0]
     siblings = [ elt for elt in matching_h2.itersiblings() ]
     return siblings
@@ -52,6 +52,8 @@ def extract_results(elts):
 
     tested = int(groups["tested"].groups(1)[0].replace(",", ""))
     count = int(groups["positive"].groups(1)[0].replace(",", ""))
+
+    assert count != 0
 
     return date, count, tested
 
