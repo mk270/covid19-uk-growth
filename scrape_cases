@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
+import argparse
 import datetime
 import database
 import sys
-import scraper
 import logging
 import os
+import api_client
 
 iso_date_fmt = "%Y-%m-%d"
 
@@ -13,17 +14,28 @@ def today_iso():
     return datetime.datetime.now().strftime(iso_date_fmt)
 
 def run():
-    if "DEBUG" in os.environ:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', action='store_true', required=False,
+                    help='set logging level to INFO')
+    parser.add_argument('--days-ago', action='store', type=int,
+                        default=0,
+                        help='set date offset')
+
+    args = parser.parse_args()
+    if args.debug or ("DEBUG" in os.environ):
         logging.getLogger().setLevel(20)
 
     if database.already_done_today(today_iso()):
         logging.warning("Data already obtained for today")
         sys.exit(0)
-    day, count, tested = scraper.get_date_and_count()
-    # date_diff = (datetime.datetime.now() - day).days
 
-    day_formatted = datetime.datetime.strftime(day, iso_date_fmt)
-    database.save_update(day_formatted, count, tested)
+    day, count, tested = api_client.lookup_cases_and_tested(args.days_ago)
+    print(day, count, tested)
+
+    # date_diff = (datetime.datetime.now() - day).days
+    # day_formatted = datetime.datetime.strftime(day, iso_date_fmt)
+
+    database.save_update(day, count, tested)
 
 if __name__ == '__main__':
    run()
