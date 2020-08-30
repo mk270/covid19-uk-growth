@@ -10,8 +10,9 @@ import api_client
 
 iso_date_fmt = "%Y-%m-%d"
 
-def today_iso():
-    return datetime.datetime.now().strftime(iso_date_fmt)
+def today_iso(days_ago):
+    then = datetime.datetime.now() - datetime.timedelta(days_ago)
+    return then.strftime(iso_date_fmt)
 
 def run():
     parser = argparse.ArgumentParser()
@@ -25,8 +26,8 @@ def run():
     if args.debug or ("DEBUG" in os.environ):
         logging.getLogger().setLevel(20)
 
-    if database.already_done_today(today_iso()):
-        logging.warning("Data already obtained for today")
+    if database.already_done_today(today_iso(args.days_ago)):
+        logging.warning("Data already obtained for the day requested")
         sys.exit(0)
 
     day, count, tested = api_client.lookup_cases_and_tested(args.days_ago)
