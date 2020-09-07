@@ -30,7 +30,12 @@ def run():
         logging.warning("Data already obtained for the day requested")
         sys.exit(0)
 
-    day, count, tested = api_client.lookup_cases_and_tested(args.days_ago)
+    try:
+        day, count, tested = api_client.lookup_cases_and_tested(args.days_ago)
+    except api_client.DateNotFound:
+        logging.error("Data not (yet) available for date requested")
+        sys.exit(1)
+
     print(day, count, tested)
 
     # date_diff = (datetime.datetime.now() - day).days
