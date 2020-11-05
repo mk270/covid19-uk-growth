@@ -1,2 +1,3 @@
 __pycache__
 cached.db
+*.pyc
