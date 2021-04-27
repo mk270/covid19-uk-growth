@@ -25,7 +25,7 @@ def get_data(today):
 
     url = f"{endpoint}?filters={filters}&structure={structure}"
     result = requests.get(url)
-    assert result.status_code == 200, result.status_code
+    assert result.status_code == 200, (result.status_code, result.reason)
     data = result.json()["data"]
 
     logging.info(json.dumps(data, indent=2))
